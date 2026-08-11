@@ -75,6 +75,10 @@
 #    include "mus-config.h"
 #endif
 
+// TIC-80 specific config
+#define WITH_SYSTEM_EXTRAS 0
+#define DISABLE_FILE_IO 1
+
 /*
  * Your config file goes here, or just replace that #include line with the defines you need.
  * The compile-time switches involve booleans, complex numbers, and multiprecision arithmetic.
