@@ -27,7 +27,7 @@ android {
                 arguments "APP_PLATFORM=android-31"
             }
             cmake {
-                arguments "-DBUILD_WITH_RUBY=OFF",
+                arguments "-DBUILD_WITH_RUBY=ON",
                             "-DBUILD_PRO=ON",
                             "-DBUILD_SURF=ON",
                             "-DCMAKE_BUILD_TYPE=Release",
