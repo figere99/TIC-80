@@ -14416,10 +14416,6 @@ static s7_complex cpow(s7_complex x, s7_complex y)
   static s7_complex catanh(s7_complex z) {return(clog((1.0 + z) / (1.0 - z)) / 2.0);}
   static s7_complex casinh(s7_complex z) {return(clog(z + csqrt(1.0 + z * z)));}
   static s7_complex cacosh(s7_complex z) {return(clog(z + csqrt(z * z - 1.0)));}
-#endif /* not FreeBSD 10 */
-#endif /* not c++ */
-#endif /* not Have_Complex_Trig */
-
 #else  /* not Have_Complex_Numbers */
   #define _Complex_I 1.0
   #define creal(X) 0.0
