@@ -14423,7 +14423,6 @@ static s7_complex cpow(s7_complex x, s7_complex y)
 #endif /* not HAVE_COMPLEX_TRIG */
 
 #else  /* not HAVE_COMPLEX_NUMBERS */
-  typedef double s7_complex;
   #define _Complex_I 1
   #define creal(x) x
   #define cimag(x) x
