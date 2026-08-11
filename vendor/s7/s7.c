@@ -256,18 +256,18 @@
 #endif
 #define With_Immutable_Unquote WITH_IMMUTABLE_UNQUOTE
 
-#ifndef WITH_C_LOADER
-  #if (WITH_GCC && (!__MINGW32__) && (!__CYGWIN__)) || defined(__TINYC__)
-    #define WITH_C_LOADER 1
-  /* (load file.so [e]) looks for ([e] 'init_func) and if found, calls it as the shared object init function.
-   * If With_System_Extras is 0, the caller needs to supply system and delete-file so that cload.scm works.
-   */
-  #else
-    #define WITH_C_LOADER 0
-    /* I think dlopen et al are available in MS C, but I have no way to test them; see load_shared_object below */
-  #endif
-#endif
-#define With_C_Loader WITH_C_LOADER
+/* #ifndef WITH_C_LOADER */
+/*   #if WITH_GCC && (!__MINGW32__) && (!__CYGWIN__) */
+/*     #define WITH_C_LOADER 1 */
+/*   /\* (load file.so [e]) looks for (e 'init_func) and if found, calls it as the shared object init function. */
+/*    * If WITH_SYSTEM_EXTRAS is 0, the caller needs to supply system and delete-file so that cload.scm works. */
+/*    *\/ */
+/*   #else */
+/*     #define WITH_C_LOADER 0 */
+/*     /\* I think dlopen et al are available in MS C, but I have no way to test them; see load_shared_object below *\/ */
+/*   #endif */
+/* #endif */
+#define WITH_C_LOADER 0
 
 #ifndef WITH_NOTCURSES
   #define WITH_NOTCURSES 0
@@ -304,6 +304,13 @@
   #ifndef HAVE_COMPLEX_NUMBERS
     #define HAVE_COMPLEX_NUMBERS 0
     /* Da Shen adds that you'll need the compiler flag /fp:precise if you're using github actions */
+  #endif
+  #ifndef HAVE_COMPLEX_TRIG
+    #define HAVE_COMPLEX_TRIG 0
+  #endif
+#elif defined(__ANDROID__)
+  #ifndef HAVE_COMPLEX_NUMBERS
+    #define HAVE_COMPLEX_NUMBERS 0
   #endif
   #ifndef HAVE_COMPLEX_TRIG
     #define HAVE_COMPLEX_TRIG 0
@@ -427,7 +434,7 @@
 #endif
 
 #if MS_Windows
-  #define no_return _Noreturn /* deprecated in C23 */
+  #define noreturn
 #else
   #define no_return __attribute__((noreturn))
   /* this is ok in gcc/g++/clang and tcc; clang++ complains about "noreturn", hence "no_return" */
@@ -454,11 +461,7 @@
 #include <inttypes.h>
 #include <setjmp.h>
 
-#if MS_Windows || defined(__MINGW32__)
-  #define Jmp_Buf       jmp_buf
-  #define SetJmp(A, B)  setjmp(A)
-  #define LongJmp(A, B) longjmp(A, B)
-#else
+#if defined(__GNUC__)
   #define Jmp_Buf       sigjmp_buf
   #define SetJmp(A, B)  sigsetjmp(A, B)
   #define LongJmp(A, B) siglongjmp(A, B)
@@ -466,6 +469,10 @@
    *   unfortunately sigsetjmp is slower than setjmp. In one case, the sigsetjmp version runs
    *   in 24 seconds, but the setjmp version takes 10 seconds, yet callgrind says there is almost no difference?
    */
+#else
+  #define Jmp_Buf       jmp_buf
+  #define SetJmp(A, B)  setjmp(A)
+  #define LongJmp(A, B) longjmp(A, B)
 #endif
 
 #if !MS_Windows
@@ -14379,7 +14386,7 @@ static s7_double s7_round(double number) {return((number < 0.0) ? ceil(number - 
   static s7_complex catanh(s7_complex z) {return(clog((1.0 + z) / (1.0 - z)) / 2.0);}
 #else
 
-#if (!defined(__FreeBSD__)) || (__FreeBSD__ < 12)
+if (!defined(__FreeBSD__)) || (__FreeBSD__ < 12)
 static s7_complex clog(s7_complex z) {return(log(fabs(cabs(z))) + carg(z) * s7_complex_i);}
 static s7_complex cpow(s7_complex x, s7_complex y)
 {
