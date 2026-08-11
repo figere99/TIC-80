@@ -14347,48 +14347,49 @@ static s7_int big_integer_to_s7_int(s7_scheme *sc, mpz_t n)
 /* for g_log, we also need round. this version is from stackoverflow, see also r5rs_round below */
 static s7_double s7_round(double number) {return((number < 0.0) ? ceil(number - 0.5) : floor(number + 0.5));}
 
-#if Have_Complex_Numbers
+#if HAVE_COMPLEX_NUMBERS
 #if __cplusplus
   #define _Complex_I (complex<s7_double>(0.0, 1.0))
-  #define creal(X) Real(X)
-  #define cimag(X) Imag(X)
-  #define carg(X) arg(X)
-  #define cabs(X) abs(X)
-  #define csqrt(X) sqrt(X)
-  #define cpow(X, Y) pow(X, Y)
-  #define clog(X) log(X)
-  #define cexp(X) exp(X)
-  #define csin(X) sin(X)
-  #define ccos(X) cos(X)
-  #define ctan(X) tan(X)
-  #define csinh(X) sinh(X)
-  #define ccosh(X) cosh(X)
-  #define ctanh(X) tanh(X)
-  #define casin(X) asin(X)
-  #define cacos(X) acos(X)
-  #define catan(X) atan(X)
-  #define casinh(X) asinh(X)
-  #define cacosh(X) acosh(X)
-  #define catanh(X) atanh(X)
+  #define creal(x) Real(x)
+  #define cimag(x) Imag(x)
+  #define carg(x) arg(x)
+  #define cabs(x) abs(x)
+  #define csqrt(x) sqrt(x)
+  #define cpow(x, y) pow(x, y)
+  #define clog(x) log(x)
+  #define cexp(x) exp(x)
+  #define csin(x) sin(x)
+  #define ccos(x) cos(x)
+  #define ctan(x) tan(x)
+  #define csinh(x) sinh(x)
+  #define ccosh(x) cosh(x)
+  #define ctanh(x) tanh(x)
+  #define casin(x) asin(x)
+  #define cacos(x) acos(x)
+  #define catan(x) atan(x)
+  #define casinh(x) asinh(x)
+  #define cacosh(x) acosh(x)
+  #define catanh(x) atanh(x)
 #else
   typedef double complex s7_complex;
 #endif
 
-#if !Have_Complex_Trig
-#if __cplusplus
+
+#if (!HAVE_COMPLEX_TRIG)
+#if (__cplusplus)
 
   static s7_complex ctan(s7_complex z)   {return(csin(z) / ccos(z));}
   static s7_complex ctanh(s7_complex z)  {return(csinh(z) / ccosh(z));}
-  static s7_complex casin(s7_complex z)  {return(-s7_complex_i * clog(s7_complex_i * z + csqrt(1.0 - z * z)));}
-  static s7_complex cacos(s7_complex z)  {return(-s7_complex_i * clog(z + s7_complex_i * csqrt(1.0 - z * z)));}
-  static s7_complex catan(s7_complex z)  {return(s7_complex_i * clog((s7_complex_i + z) / (s7_complex_i - z)) / 2.0);}
+  static s7_complex casin(s7_complex z)  {return(-_Complex_I * clog(_Complex_I * z + csqrt(1.0 - z * z)));}
+  static s7_complex cacos(s7_complex z)  {return(-_Complex_I * clog(z + _Complex_I * csqrt(1.0 - z * z)));}
+  static s7_complex catan(s7_complex z)  {return(_Complex_I * clog((_Complex_I + z) / (_Complex_I - z)) / 2.0);}
   static s7_complex casinh(s7_complex z) {return(clog(z + csqrt(1.0 + z * z)));}
   static s7_complex cacosh(s7_complex z) {return(clog(z + csqrt(z * z - 1.0)));}
   static s7_complex catanh(s7_complex z) {return(clog((1.0 + z) / (1.0 - z)) / 2.0);}
 #else
 
-if (!defined(__FreeBSD__)) || (__FreeBSD__ < 12)
-static s7_complex clog(s7_complex z) {return(log(fabs(cabs(z))) + carg(z) * s7_complex_i);}
+#if (!defined(__FreeBSD__)) || (__FreeBSD__ < 12)
+static s7_complex clog(s7_complex z) {return(log(fabs(cabs(z))) + carg(z) * _Complex_I);}
 static s7_complex cpow(s7_complex x, s7_complex y)
 {
   s7_double r = cabs(x);
@@ -14397,23 +14398,23 @@ static s7_complex cpow(s7_complex x, s7_complex y)
   s7_double yim = cimag(y);
   s7_double nr = exp(yre * log(r) - yim * theta);
   s7_double ntheta = yre * theta + yim * log(r);
-  return(nr * cos(ntheta) + (nr * sin(ntheta)) * s7_complex_i);
+  return(nr * cos(ntheta) + (nr * sin(ntheta)) * _Complex_I);
 }
 #endif
 #if (!defined(__FreeBSD__)) || (__FreeBSD__ < 9) /* untested -- this orignally looked at __FreeBSD_version which apparently no longer exists */
-  static s7_complex cexp(s7_complex z) {return(exp(creal(z)) * cos(cimag(z)) + (exp(creal(z)) * sin(cimag(z))) * s7_complex_i);}
+  static s7_complex cexp(s7_complex z) {return(exp(creal(z)) * cos(cimag(z)) + (exp(creal(z)) * sin(cimag(z))) * _Complex_I);}
 #endif
 
 #if (!defined(__FreeBSD__)) || (__FreeBSD__ < 10)
-  static s7_complex csin(s7_complex z)   {return(sin(creal(z)) * cosh(cimag(z)) + (cos(creal(z)) * sinh(cimag(z))) * s7_complex_i);}
-  static s7_complex ccos(s7_complex z)   {return(cos(creal(z)) * cosh(cimag(z)) + (-sin(creal(z)) * sinh(cimag(z))) * s7_complex_i);}
-  static s7_complex csinh(s7_complex z)  {return(sinh(creal(z)) * cos(cimag(z)) + (cosh(creal(z)) * sin(cimag(z))) * s7_complex_i);}
-  static s7_complex ccosh(s7_complex z)  {return(cosh(creal(z)) * cos(cimag(z)) + (sinh(creal(z)) * sin(cimag(z))) * s7_complex_i);}
+  static s7_complex csin(s7_complex z)   {return(sin(creal(z)) * cosh(cimag(z)) + (cos(creal(z)) * sinh(cimag(z))) * _Complex_I);}
+  static s7_complex ccos(s7_complex z)   {return(cos(creal(z)) * cosh(cimag(z)) + (-sin(creal(z)) * sinh(cimag(z))) * _Complex_I);}
+  static s7_complex csinh(s7_complex z)  {return(sinh(creal(z)) * cos(cimag(z)) + (cosh(creal(z)) * sin(cimag(z))) * _Complex_I);}
+  static s7_complex ccosh(s7_complex z)  {return(cosh(creal(z)) * cos(cimag(z)) + (sinh(creal(z)) * sin(cimag(z))) * _Complex_I);}
   static s7_complex ctan(s7_complex z)   {return(csin(z) / ccos(z));}
   static s7_complex ctanh(s7_complex z)  {return(csinh(z) / ccosh(z));}
-  static s7_complex casin(s7_complex z)  {return(-s7_complex_i * clog(s7_complex_i * z + csqrt(1.0 - z * z)));}
-  static s7_complex cacos(s7_complex z)  {return(-s7_complex_i * clog(z + s7_complex_i * csqrt(1.0 - z * z)));}
-  static s7_complex catan(s7_complex z)  {return(s7_complex_i * clog((s7_complex_i + z) / (s7_complex_i - z)) / 2.0);}
+  static s7_complex casin(s7_complex z)  {return(-_Complex_I * clog(_Complex_I * z + csqrt(1.0 - z * z)));}
+  static s7_complex cacos(s7_complex z)  {return(-_Complex_I * clog(z + _Complex_I * csqrt(1.0 - z * z)));}
+  static s7_complex catan(s7_complex z)  {return(_Complex_I * clog((_Complex_I + z) / (_Complex_I - z)) / 2.0);}
   static s7_complex catanh(s7_complex z) {return(clog((1.0 + z) / (1.0 - z)) / 2.0);}
   static s7_complex casinh(s7_complex z) {return(clog(z + csqrt(1.0 + z * z)));}
   static s7_complex cacosh(s7_complex z) {return(clog(z + csqrt(z * z - 1.0)));}
@@ -14421,27 +14422,28 @@ static s7_complex cpow(s7_complex x, s7_complex y)
 #endif /* not c++ */
 #endif /* not HAVE_COMPLEX_TRIG */
 
-#else  /* not Have_Complex_Numbers */
-  #define _Complex_I 1.0
-  #define creal(X) 0.0
-  #define cimag(X) 0.0
-  #define csin(X) sin(X)
-  #define casin(X) X
-  #define ccos(X) cos(X)
-  #define cacos(X) X
-  #define ctan(X) X
-  #define catan(X) X
-  #define csinh(X) X
-  #define casinh(X) X
-  #define ccosh(X) X
-  #define cacosh(X) X
-  #define ctanh(X) X
-  #define catanh(X) X
-  #define cexp(X) exp(X)
-  #define cpow(X, Y) pow(X, Y)
-  #define clog(X) log(X)
-  #define csqrt(X) sqrt(X)
-  #define conj(X) X
+#else  /* not HAVE_COMPLEX_NUMBERS */
+  typedef double s7_complex;
+  #define _Complex_I 1
+  #define creal(x) x
+  #define cimag(x) x
+  #define csin(x) sin(x)
+  #define casin(x) x
+  #define ccos(x) cos(x)
+  #define cacos(x) x
+  #define ctan(x) x
+  #define catan(x) x
+  #define csinh(x) x
+  #define casinh(x) x
+  #define ccosh(x) x
+  #define cacosh(x) x
+  #define ctanh(x) x
+  #define catanh(x) x
+  #define cexp(x) exp(x)
+  #define cpow(x, y) pow(x, y)
+  #define clog(x) log(x)
+  #define csqrt(x) sqrt(x)
+  #define conj(x) x
 #endif
 
 #ifdef __OpenBSD__
