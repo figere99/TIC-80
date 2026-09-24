@@ -153,7 +153,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
+            signingConfig null
         }
     }
     if (!project.hasProperty('EXCLUDE_NATIVE_LIBS')) {
