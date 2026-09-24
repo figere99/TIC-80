@@ -129,7 +129,7 @@ android {
             }
             cmake {
                 arguments "-DBUILD_WITH_RUBY=OFF",
-                            "-DBUILD_PRO=${ticPro}",
+                            "-DBUILD_PRO=ON",
                             "-DCMAKE_BUILD_TYPE=Release",
                             "-DBUILD_WITH_ALL=ON"
             }
